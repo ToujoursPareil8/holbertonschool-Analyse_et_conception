@@ -1,0 +1,29 @@
+erDiagram
+    CLIENT ||--o{ COMMANDE : "PASSE"
+    COMMANDE ||--|{ LIGNE_COMMANDE : "POSSEDE"
+    PRODUIT ||--o{ LIGNE_COMMANDE : "FIGURE_DANS"
+
+    CLIENT {
+        string id_client PK
+        string nom
+        string contact
+        string adr_livraison
+    }
+
+    COMMANDE {
+        string id_cmd PK
+        date date_achat
+        string statut_cmd
+    }
+
+    PRODUIT {
+        string code_prod PK
+        string designation
+        float prix_unitaire_ht
+    }
+
+    LIGNE_COMMANDE {
+        string id_cmd PK, FK
+        string code_prod PK, FK
+        int quantite
+    }
