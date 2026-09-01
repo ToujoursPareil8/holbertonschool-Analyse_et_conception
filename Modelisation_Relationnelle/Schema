@@ -1,3 +1,5 @@
+mermaid diagram
+
 erDiagram
     CLIENT ||--o{ COMMANDE : "PASSE"
     COMMANDE ||--|{ LIGNE_COMMANDE : "POSSEDE"
@@ -27,3 +29,17 @@ erDiagram
         string code_prod PK, FK
         int quantite
     }
+
+ASCII representation:
+
+CLIENT                                 COMMANDE                               PRODUIT
+ ___________________                    ____________________                   ____________________
+|                   |                  |                    |                 |                    |
+| id_client (PK)    |       0,n        | id_cmd (PK)        |       1,n       | code_prod (PK)     |
+| nom               |----( PASSE )----<| date_achat         |>---( CONTIENT )-|< designation        |
+| contact           |       1,1        | statut_cmd         |       0,n       | prix_unitaire_ht   |
+| adr_livraison     |                  |                    |                 |                    |
+|___________________|                  |____________________|                 |____________________|
+                                                                                        |
+                                                                                        | (Attribut porté)
+                                                                                   [ quantite ]
