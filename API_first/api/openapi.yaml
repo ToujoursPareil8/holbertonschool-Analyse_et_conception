@@ -1,0 +1,70 @@
+openapi: 3.0.3
+info:
+  title: MegaShop-B2B API
+  version: 1.0.0
+  description: API publique de MegaShop-B2B.
+  contact:
+    name: Équipe Plateforme MegaShop-B2B
+    email: api-support@megashop-b2b.com
+servers:
+  - url: https://api.megashop-b2b.com/v1
+tags:
+  - name: Payments
+    description: Opérations liées au traitement et à la notification des paiements.
+paths:
+  /payments/webhook:
+    post:
+      operationId: handlePaymentWebhook
+      tags:
+        - Payments
+      summary: Webhook de notification de paiement
+      description: Endpoint appelé par la banque pour notifier le système d'un succès ou d'un échec de paiement.
+      requestBody:
+        description: Les données envoyées par la banque concernant la transaction.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookPayload'
+      responses:
+        '204':
+          description: Notification traitée avec succès. Aucun corps renvoyé.
+        '400':
+          description: Données invalides transmises par la banque.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    WebhookPayload:
+      type: object
+      description: Payload strict attendu de la part de la banque.
+      required:
+        - orderId
+        - status
+        - transactionId
+      additionalProperties: false
+      properties:
+        orderId:
+          type: string
+          format: uuid
+          description: Identifiant de la commande au format UUID exact.
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILED
+          description: Résultat de la transaction bancaire.
+        transactionId:
+          type: string
+          pattern: '^TXN-[0-9]{8}$'
+          description: Identifiant de transaction bancaire (Préfixe TXN- suivi de 8 chiffres).
+          example: "TXN-12345678"
+
+    ErrorResponse:
+      type: string
+      description: Message textuel renvoyé en cas d'erreur de validation.
+      example: "Format de l'identifiant de transaction invalide."
