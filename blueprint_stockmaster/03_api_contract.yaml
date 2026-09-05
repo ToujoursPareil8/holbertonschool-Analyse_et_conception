@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: StockMaster-Pro API
+  version: 1.0.0
+  description: API de gestion des mouvements d'inventaire physique.
+servers:
+  - url: https://api.stockmaster-pro.com/v1
+paths:
+  /inventory/movements:
+    post:
+      summary: Déclarer un mouvement de stock
+      description: Permet aux manutentionnaires d'ajouter (ENTREE) ou de retirer (SORTIE) une quantité de stock dans un emplacement.
+      tags:
+        - Inventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovementPayload'
+      responses:
+        '201':
+          description: Mouvement enregistré avec succès.
+        '400':
+          description: Erreur de validation (ex. quantité négative ou nulle, payload malformé).
+        '409':
+          description: Conflit métier (Règle de gouvernance absolue violée - stock insuffisant pour une sortie).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    MovementPayload:
+      type: object
+      required:
+        - emplacementId
+        - typeMouvement
+        - quantite
+      additionalProperties: false
+      properties:
+        emplacementId:
+          type: integer
+          description: Identifiant de l'emplacement (Mappé sur id_emplacement en BDD).
+          example: 42
+        typeMouvement:
+          type: string
+          enum:
+            - ENTREE
+            - SORTIE
+          description: Nature de l'opération logistique.
+        quantite:
+          type: integer
+          minimum: 1
+          description: Nombre d'unités concernées (doit être un entier strictement positif).
+          example: 5
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Stock insuffisant : impossible de sortir 10 unités, stock actuel : 5."
