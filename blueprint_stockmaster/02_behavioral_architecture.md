@@ -25,3 +25,4 @@ sequenceDiagram
         BDD-->>API: Confirmation d'insertion (id généré)
         API-->>Manutentionnaire: HTTP 201 Created
     end
+```
